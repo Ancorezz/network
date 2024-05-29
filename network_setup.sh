@@ -5,6 +5,21 @@ log() {
     echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" >> $LOG_FILE
 }
 
+# предупреждение пользователей
+echo "внимание: выполнение этого скрипта может повлиять на ваше сетевое подключение"
+echo "убедитесь, что вы осознаете свои действия и имеете резервное подключение к сети, если это необходимо"
+read -p "Продолжить? (y/n): " choice
+if [[ "$choice" != "y" ]]; then
+    echo "отменено"
+    exit 1
+fi
+
+# проверка прав доступа
+if [[ $EUID -ne 0 ]]; then
+    echo "этот скрипт должен быть выполнен с правами суперпользователя" >&2
+    exit 1
+fi
+
 # проверка наличия IP-адреса
 if [[ -z "$1" ]]; then
     echo "пожалуйста, укажите новый ip-адрес" >&2
@@ -58,14 +73,14 @@ EOL
 else
     # создание резервной копии файла конфигурации сети
     log "создание резервной копии файла конфигурации сети"
-    cp $INTERFACES_FILE $BACKUP_FILE
+    cp $INTERFACES_FILE $BACKUP_FILE || { echo "Ошибка при создании резервной копии" >&2; log "Ошибка при создании резервной копии"; exit 1; }
 
     # замена ip-адреса в файле конфигурации сети в зависимости от os
     log "замена ip-адреса в файле конфигурации сети"
     if [ "$OS" = "debian" ]; then
-        sed -i "s/^\(address\s\).*/\1$NEW_IP/" $INTERFACES_FILE
+        sed -i "s/^\(address\s\).*/\1$NEW_IP/" $INTERFACES_FILE || { echo "Ошибка при изменении IP-адреса" >&2; log "Ошибка при изменении IP-адреса"; exit 1; }
     elif [ "$OS" = "redhat" ]; then
-        sed -i "s/^IPADDR=.*/IPADDR=$NEW_IP/" $INTERFACES_FILE
+        sed -i "s/^IPADDR=.*/IPADDR=$NEW_IP/" $INTERFACES_FILE || { echo "Ошибка при изменении IP-адреса" >&2; log "Ошибка при изменении IP-адреса"; exit 1; }
     fi
 fi
 
@@ -90,9 +105,9 @@ change_mac_address() {
     local NEW_MAC=$2
 
     log "изменение mac-адреса для интерфейса $INTER"
-    ip link set dev $INTERFACE down
-    ip link set dev $INTERFACE address $NEW_MAC
-    ip link set dev $INTERFACE up
+    ip link set dev $INTERFACE down || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
+    ip link set dev $INTERFACE address $NEW_MAC || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении IP-адреса"; exit 1; }
+    ip link set dev $INTERFACE up || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
 }
 
 
