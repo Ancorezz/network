@@ -49,7 +49,7 @@ LOG_FILE="/var/log/network_setup.log"
 if [ ! -f "$INTERFACES_FILE" ]; then
     log "файл конфигурации сети не найден. создание нового файла"
     if [ "$OS" = "debian" ]; then
-        cat <<EOL > $INTERFACES_FILE
+        #cat <<EOL > $INTERFACES_FILE
 auto lo
 iface lo inet loopback
 
@@ -61,14 +61,14 @@ iface eth0 inet static
 EOL
     elif [ "$OS" = "redhat" ]; then
         INTERFACE_NAME=$(basename $INTERFACES_FILE | sed 's/^ifcfg-//')
-        cat <<EOL > $INTERFACES_FILE
+        cat << EOL > $INTERFACES_FILE
 DEVICE=$INTERFACE_NAME
 BOOTPROTO=none
 ONBOOT=yes
 IPADDR=$NEW_IP
 NETMASK=255.255.255.0
 GATEWAY=192.168.1.1
-EOL
+EOL 
     fi
 else
     # создание резервной копии файла конфигурации сети
@@ -106,7 +106,7 @@ change_mac_address() {
 
     log "изменение mac-адреса для интерфейса $INTER"
     ip link set dev $INTERFACE down || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
-    ip link set dev $INTERFACE address $NEW_MAC || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении IP-адреса"; exit 1; }
+    ip link set dev $INTERFACE address $NEW_MAC || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
     ip link set dev $INTERFACE up || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
 }
 
