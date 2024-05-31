@@ -104,9 +104,9 @@ change_mac_address() {
     local NEW_MAC=$2
 
     log "изменение mac-адреса для интерфейса $INTER"
-    ip link set dev $INTERFACE down || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
-    ip link set dev $INTERFACE address $NEW_MAC || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
-    ip link set dev $INTERFACE up || { echo "Ошибка при изменении mac-адреса" >&2; log "Ошибка при изменении mac-адреса"; exit 1; }
+    ip link set dev $INTERFACE down || { echo "ошибка при изменении mac-адреса" >&2; log "ошибка при изменении mac-адреса"; exit 1; }
+    ip link set dev $INTERFACE address $NEW_MAC || { echo "ошибка при изменении mac-адреса" >&2; log "ошибка при изменении mac-адреса"; exit 1; }
+    ip link set dev $INTERFACE up || { echo "ошибка при изменении mac-адреса" >&2; log "ошибка при изменении mac-адреса"; exit 1; }
 }
 
 
