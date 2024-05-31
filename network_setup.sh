@@ -72,14 +72,14 @@ EOL
 else
     # создание резервной копии файла конфигурации сети
     log "создание резервной копии файла конфигурации сети"
-    cp $INTERFACES_FILE $BACKUP_FILE || { echo "Ошибка при создании резервной копии" >&2; log "Ошибка при создании резервной копии"; exit 1; }
+    cp $INTERFACES_FILE $BACKUP_FILE || { echo "ошибка при создании резервной копии" >&2; log "ошибка при создании резервной копии"; exit 1; }
 
     # замена ip-адреса в файле конфигурации сети в зависимости от os
     log "замена ip-адреса в файле конфигурации сети"
     if [ "$OS" = "debian" ]; then
-        sed -i "s/^\(address\s\).*/\1$NEW_IP/" $INTERFACES_FILE || { echo "Ошибка при изменении IP-адреса" >&2; log "Ошибка при изменении IP-адреса"; exit 1; }
+        sed -i "s/^\(address\s\).*/\1$NEW_IP/" $INTERFACES_FILE || { echo "ошибка при изменении IP-адреса" >&2; log "ошибка при изменении IP-адреса"; exit 1; }
     elif [ "$OS" = "redhat" ]; then
-        sed -i "s/^IPADDR=.*/IPADDR=$NEW_IP/" $INTERFACES_FILE || { echo "Ошибка при изменении IP-адреса" >&2; log "Ошибка при изменении IP-адреса"; exit 1; }
+        sed -i "s/^IPADDR=.*/IPADDR=$NEW_IP/" $INTERFACES_FILE || { echo "ошибка при изменении IP-адреса" >&2; log "ошибка при изменении IP-адреса"; exit 1; }
     fi
 fi
 
@@ -104,9 +104,9 @@ change_mac_address() {
     local NEW_MAC=$2
 
     log "изменение mac-адреса для интерфейса $INTER"
-    ip link set dev $INTERFACE down || { echo "ошибка при изменении mac-адреса" >&2; log "ошибка при изменении mac-адреса"; exit 1; }
+    ip link set dev $INTERFACE down || { echo "ошибка при отключения интерфеса" >&2; log "ошибка при отключения интерфеса"; exit 1; }
     ip link set dev $INTERFACE address $NEW_MAC || { echo "ошибка при изменении mac-адреса" >&2; log "ошибка при изменении mac-адреса"; exit 1; }
-    ip link set dev $INTERFACE up || { echo "ошибка при изменении mac-адреса" >&2; log "ошибка при изменении mac-адреса"; exit 1; }
+    ip link set dev $INTERFACE up || { echo "ошибка при включение интерфеса" >&2; log "ошибка при включение интерфеса"; exit 1; }
 }
 
 
